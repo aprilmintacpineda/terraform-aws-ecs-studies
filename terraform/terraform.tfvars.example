@@ -1,4 +1,4 @@
-project_name = "terraform-todo-app"
+project_name = "tf-study"
 AWS_REGION = "ap-southeast-1"
 vpc_cidr = "10.0.0.0/16"
 public_subnet_cidrs = [ "10.0.101.0/24", "10.0.102.0/24" ]
