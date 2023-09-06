@@ -5,5 +5,5 @@ WORKDIR /app
 COPY build/. /app
 RUN yarn --prefer-offline
 
-EXPOSE 3030
+EXPOSE 3000
 CMD ["node", "server.js"]
