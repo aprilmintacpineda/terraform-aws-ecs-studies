@@ -21,6 +21,11 @@ const server = fastify({
       })
     ]);
 
+    // just a health check endpoint necessary for ECS
+    server.get('/health', (request, reply) => {
+      reply.status(200).send('Healthy');
+    });
+
     await server.listen({ port: 3000, host: '0.0.0.0' });
 
     console.log('http://localhost:3000');
