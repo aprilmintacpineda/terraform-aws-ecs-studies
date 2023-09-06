@@ -7,7 +7,8 @@ This repository contains files that I used for my studies with Terraform. I crea
 ## Backend Infrastructure
 
 - [x] VPC
-- [ ] ECS
+- [x] ECS
+- [ ] Autoscaling
 - [ ] MongoDB
 
 ## Frontend Infrastructure
