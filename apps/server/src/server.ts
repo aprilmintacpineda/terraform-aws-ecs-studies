@@ -22,15 +22,18 @@ const server = fastify({
     ]);
 
     // just a health check endpoint necessary for ECS
-    server.get('/health', (request, reply) => {
-      reply.status(200).send('Healthy');
+    server.get('/health', async (request, reply) => {
+      const result = await mongoose.connection.db.admin().ping();
+
+      if (result.ok) reply.status(200).send('Healthy');
+      else reply.status(500).send('unhealthy');
     });
 
     await server.listen({ port: 3000, host: '0.0.0.0' });
 
     console.log('http://localhost:3000');
   } catch (err) {
-    server.log.error(err);
+    console.error(err);
     process.exit(1);
   }
 })();
