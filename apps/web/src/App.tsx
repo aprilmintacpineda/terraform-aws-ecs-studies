@@ -7,6 +7,7 @@ import { trpc } from './utils/trpc';
 import { ThemeProvider, createTheme } from '@mui/material';
 import Todos from './components/Todos';
 import { SnackbarProvider } from 'notistack';
+import env from './env';
 
 const theme = createTheme({
   components: {
@@ -32,7 +33,7 @@ const queryClient = new QueryClient({
 const trpcClient = trpc.createClient({
   links: [
     httpBatchLink({
-      url: 'http://localhost:3000/trpc',
+      url: env.VITE_TRPC_ENDPOINT,
 
       // You can pass any HTTP headers you wish here
       async headers() {
