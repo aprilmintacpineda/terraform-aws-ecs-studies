@@ -14,8 +14,8 @@ This repository contains files that I used for my studies with Terraform. I crea
 
 ## Frontend Infrastructure
 
-- [ ] S3
-- [ ] Cloudfront
+- [x] S3 (private, not accessible to the public)
+- [x] Cloudfront
 
 # Run the whole thing locally
 
