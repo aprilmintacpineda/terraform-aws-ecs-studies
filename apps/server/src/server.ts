@@ -36,6 +36,48 @@ const server = fastify({
       }
     });
 
+    // load test
+    server.get('/load-test', async (request, reply) => {
+      function permutations (
+        arr: (string | number)[]
+      ): (string | number)[][] {
+        const result: (string | number)[][] = [];
+
+        function permute (
+          current: (string | number)[],
+          remaining: (string | number)[]
+        ) {
+          if (remaining.length === 0) {
+            result.push([...current]);
+            return;
+          }
+
+          for (let i = 0; i < remaining.length; i++) {
+            const nextValue = remaining[i];
+            current.push(nextValue);
+            const nextRemaining = [
+              ...remaining.slice(0, i),
+              ...remaining.slice(i + 1)
+            ];
+            permute(current, nextRemaining);
+            current.pop();
+          }
+        }
+
+        permute([], arr);
+
+        return result;
+      }
+
+      reply
+        .status(200)
+        .send(
+          permutations(
+            Math.random().toString(32).substring(5).split('')
+          )
+        );
+    });
+
     await server.listen({ port: 3000, host: '0.0.0.0' });
 
     console.log('http://localhost:3000');

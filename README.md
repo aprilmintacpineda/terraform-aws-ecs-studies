@@ -8,7 +8,7 @@ This repository contains files that I used for my studies with Terraform. I crea
 
 - [x] VPC
 - [x] ECS
-- [ ] Autoscaling
+- [x] Autoscaling
 - [ ] MongoDB
 
 ## Frontend Infrastructure
@@ -38,3 +38,13 @@ When you're done and want to remove everything, just run `docker-compose down`. 
 2. `yarn`
 3. `cd terraform && terraform init`
 4. `terraform apply`
+
+# Load test
+
+There's an endpoint dedicated for load test, it will calculate permutations on **4** items. Simply send an http request to this endpoint like so:
+
+```
+loadtest -c 1000 --rps 1000 http://dev-tf-study-ecs-lb-1617181243.ap-southeast-1.elb.amazonaws.com/load-test
+```
+
+The code above will use [load test](https://www.npmjs.com/package/loadtest) to send 1,000 requests per second with a max concurrency of 1,000 requests.
