@@ -388,9 +388,9 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
       logConfiguration = {
         logDriver = "awslogs",
         options = {
-          awslogs-region = var.AWS_REGION,
-          awslogs-group = aws_cloudwatch_log_group.ecs_cluster_log_group.name,
-          awslogs-stream-prefix = var.stage
+          "awslogs-region" = var.AWS_REGION,
+          "awslogs-group" = aws_cloudwatch_log_group.ecs_cluster_log_group.name,
+          "awslogs-stream-prefix" = var.stage
         }
       }
     }
@@ -456,5 +456,121 @@ resource "aws_ecs_service" "ecs_service" {
     container_name = "${var.stage}-${var.project_name}-ecs-container"
     container_port = 3000
     target_group_arn = aws_lb_target_group.ecs_service_load_balancer_target_group.arn
+  }
+}
+
+resource "aws_s3_bucket" "frontend_s3_bucket" {
+  bucket = "${var.stage}-${var.project_name}-frontend-s3-bucket"
+}
+
+resource "aws_s3_bucket_acl" "s3_bucket_acl" {
+  bucket = aws_s3_bucket.frontend_s3_bucket.id
+  acl = "private"
+}
+
+resource "aws_s3_bucket_public_access_block" "block_public_access" {
+  bucket = aws_s3_bucket.frontend_s3_bucket.id
+
+  block_public_acls = true
+  block_public_policy = true
+  ignore_public_acls = true
+  restrict_public_buckets = true
+}
+
+resource "aws_s3_bucket_policy" "frontend_s3_cloudfront_access" {
+  bucket = aws_s3_bucket.frontend_s3_bucket.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Principal = {
+          AWS = aws_cloudfront_origin_access_identity.cf_s3_oai.iam_arn
+        }
+        Action = ["s3:GetObject"]
+        Resource = "${aws_s3_bucket.frontend_s3_bucket.arn}/*"
+      }
+    ]
+  })
+}
+
+resource "aws_cloudfront_origin_access_identity" "cf_s3_oai" {
+  comment = "${var.stage}-${var.project_name}-cf-s3-oac"
+}
+
+resource "aws_cloudfront_response_headers_policy" "security_headers" {
+  name = "${var.stage}-${var.project_name}-security-headers"
+
+  security_headers_config {
+    // You don't need to specify a value for 'X-Content-Type-Options'.
+    // Simply including it in the template sets its value to 'nosniff'.
+    content_type_options {
+      override = false
+    }
+
+    frame_options {
+      frame_option = "SAMEORIGIN"
+      override = false
+    }
+
+    strict_transport_security {
+      access_control_max_age_sec = 63072000
+      override = false
+    }
+
+    xss_protection {
+      protection = true
+      override = false
+    }
+  }
+
+  remove_headers_config {
+    items {
+      header = "X-Powered-By"
+    }
+  }
+}
+
+resource "aws_cloudfront_distribution" "frontend_cf" {
+  enabled = true
+  is_ipv6_enabled = true
+  http_version = "http2and3"
+  default_root_object = "index.html"
+  
+  origin {
+    domain_name = aws_s3_bucket.frontend_s3_bucket.bucket_regional_domain_name
+    origin_id = "${var.stage}-${var.project_name}-s3-bucket-origin"
+
+    s3_origin_config {
+      origin_access_identity = aws_cloudfront_origin_access_identity.cf_s3_oai.cloudfront_access_identity_path
+    }
+  }
+  
+  default_cache_behavior {
+    response_headers_policy_id = aws_cloudfront_response_headers_policy.security_headers.id
+    allowed_methods = ["GET", "HEAD", "OPTIONS"]
+    cache_policy_id = "658327ea-f89d-4fab-a63d-7e88639e58f6" // AWS Managed Caching Optimized
+    target_origin_id = "${var.stage}-${var.project_name}-s3-bucket-origin"
+    viewer_protocol_policy = "allow-all"
+    compress = true
+    cached_methods = ["GET", "HEAD", "OPTIONS"]
+  }
+
+  custom_error_response {
+    error_code = "404"
+    response_code = "200"
+    response_page_path = "/index.html"
+  }
+
+  viewer_certificate {
+    cloudfront_default_certificate = true
+  }
+
+  restrictions {
+    geo_restriction {
+      restriction_type = "none"
+      locations = []
+    }
   }
 }
