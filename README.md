@@ -10,6 +10,7 @@ This repository contains files that I used for my studies with Terraform. I crea
 - [x] ECS
 - [x] Autoscaling
 - [ ] MongoDB
+- [ ] Docker push to ECR
 
 ## Frontend Infrastructure
 
