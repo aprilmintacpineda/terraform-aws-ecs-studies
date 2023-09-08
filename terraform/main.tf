@@ -461,20 +461,7 @@ resource "aws_ecs_service" "ecs_service" {
 
 resource "aws_s3_bucket" "frontend_s3_bucket" {
   bucket = "${var.stage}-${var.project_name}-frontend-s3-bucket"
-}
-
-resource "aws_s3_bucket_acl" "s3_bucket_acl" {
-  bucket = aws_s3_bucket.frontend_s3_bucket.id
-  acl = "private"
-}
-
-resource "aws_s3_bucket_public_access_block" "block_public_access" {
-  bucket = aws_s3_bucket.frontend_s3_bucket.id
-
-  block_public_acls = true
-  block_public_policy = true
-  ignore_public_acls = true
-  restrict_public_buckets = true
+  force_destroy = true
 }
 
 resource "aws_s3_bucket_policy" "frontend_s3_cloudfront_access" {
@@ -572,5 +559,24 @@ resource "aws_cloudfront_distribution" "frontend_cf" {
       restriction_type = "none"
       locations = []
     }
+  }
+}
+
+resource "null_resource" "frontend_files" {
+  triggers = {
+    always_run = timestamp()
+  }
+
+  // if we have a local .env file, we want to make sure we keep it before creating a new one with different contents
+  provisioner "local-exec" {
+    command = <<EOF
+      [[ ! -f ../apps/web/.env ]] || mv ../apps/web/.env ../apps/web/.env.backup
+      touch ../apps/web/.env
+      echo "VITE_TRPC_ENDPOINT=http://${aws_lb.ecs_lb.dns_name}/trpc" >> ../apps/web/.env
+      yarn --cwd ../apps/web build
+      aws s3 sync ../apps/web/dist s3://${aws_s3_bucket.frontend_s3_bucket.id}
+      aws cloudfront create-invalidation --distribution-id ${aws_cloudfront_distribution.frontend_cf.id} --paths "/*"
+      [[ ! -f ../apps/web/.env.backup ]] || mv ../apps/web/.env.backup ../apps/web/.env
+    EOF
   }
 }

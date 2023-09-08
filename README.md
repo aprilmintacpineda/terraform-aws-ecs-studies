@@ -16,6 +16,7 @@ This repository contains files that I used for my studies with Terraform. I crea
 
 - [x] S3 (private, not accessible to the public)
 - [x] Cloudfront
+- [x] Build and upload frontend files to S3
 
 # Run the whole thing locally
 
@@ -37,8 +38,13 @@ When you're done and want to remove everything, just run `docker-compose down`. 
 
 1. Clone repository
 2. `yarn`
-3. `cd terraform && terraform init`
-4. `terraform apply`
+3. `cd terraform`
+4. `terraform init`
+5. `terraform apply`
+
+### Notes
+
+1. **Network error: Blocked mixed content**. This happens because the website loads in HTTPS because of cloudfront's default certificate, however, ELB doesn't offer the same feature, so the API will be loaded via HTTP. To get around this, we either need to use our own custom domain, or simply allow the site to load insecure contents.
 
 # Load test
 
