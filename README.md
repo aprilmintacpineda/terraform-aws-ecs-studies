@@ -8,7 +8,7 @@ This repository contains files that I used for my studies with Terraform. I crea
 
 - [x] VPC
 - [x] ECS
-- [x] Autoscaling
+- [x] ECS Autoscaling
 - [ ] MongoDB
 - [ ] Docker push to ECR
 
