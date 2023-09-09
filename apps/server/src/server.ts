@@ -13,7 +13,11 @@ const server = fastify({
 (async () => {
   try {
     await Promise.all([
-      mongoose.connect(env.MONGO_DB),
+      mongoose.connect(env.MONGODB_URI, {
+        user: env.MONGODB_USER,
+        pass: env.MONGODB_PASS,
+        dbName: env.MONGODB_DBNAME
+      }),
       server.register(cors, {}),
       server.register(fastifyTRPCPlugin, {
         prefix: '/trpc',
