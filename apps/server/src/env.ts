@@ -9,6 +9,9 @@ const validationSchema = yup.object({
   MONGODB_DBNAME: yup.string().required()
 });
 
-const env = validationSchema.validateSync(process.env);
+const env = validationSchema.validateSync(process.env, {
+  abortEarly: false,
+  stripUnknown: true
+});
 
 export default env;
