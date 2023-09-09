@@ -4,6 +4,11 @@ terraform {
       source  = "hashicorp/aws"
       version = "~> 5.0"
     }
+
+    mongodbatlas = {
+      source = "mongodb/mongodbatlas"
+      version = "~> 1.11"
+    }
   }
 
   required_version = "~> 1.5.6"
@@ -12,6 +17,14 @@ terraform {
 resource "random_string" "uid" {
   length = 6
   special = false
+}
+
+resource "random_password" "mongodb_atlas_root_user" {
+  length = 30
+  special = false
+  min_lower = 5
+  min_upper = 5
+  min_numeric = 5
 }
 
 provider "aws" {
@@ -23,6 +36,13 @@ provider "aws" {
   #   }
   # }
 }
+
+provider "mongodbatlas" {
+  public_key = var.mongodb_atlas_pubkey
+  private_key  = var.mongodb_atlas_privkey
+}
+
+data "mongodbatlas_roles_org_id" "current" {}
 
 data "aws_caller_identity" "current" {}
 
@@ -422,7 +442,7 @@ resource "aws_lb_listener" "http_listener" {
 }
 
 resource "aws_lb_target_group" "ecs_service_load_balancer_target_group" {
-  name = "${var.stage}-${var.project_name}-ecs-service-lb-tg"
+  name = "${var.stage}-${var.project_name}-ecs-lb-tg"
   target_type = "ip"
   vpc_id = aws_vpc.main_vpc.id
   port = 3000
@@ -579,4 +599,41 @@ resource "null_resource" "frontend_files" {
       [[ ! -f ../apps/web/.env.backup ]] || mv ../apps/web/.env.backup ../apps/web/.env
     EOF
   }
+}
+
+resource "mongodbatlas_project" "project" {
+  name = "${var.project_name}-${var.stage}"
+  org_id = data.mongodbatlas_roles_org_id.current.org_id
+}
+
+resource "mongodbatlas_serverless_instance" "main_db" {
+  name = "${var.project_name}-${var.stage}"
+  project_id = mongodbatlas_project.project.id
+
+  provider_settings_backing_provider_name = "AWS"
+  provider_settings_provider_name = "SERVERLESS"
+  provider_settings_region_name = upper(replace(var.AWS_REGION, "-", "_"))
+}
+
+resource "mongodbatlas_database_user" "root_user" {
+  username = "root"
+  password = random_password.mongodb_atlas_root_user.result
+  project_id = mongodbatlas_project.project.id
+  auth_database_name = "admin"
+
+  scopes {
+    name = "${var.project_name}-${var.stage}"
+    type = "CLUSTER"
+  }
+
+  roles {
+    role_name = "readWrite"
+    database_name = "${var.project_name}-${var.stage}"
+  }
+}
+
+resource "mongodbatlas_project_ip_access_list" "db_network_access" {
+  count = length(var.public_subnet_cidrs)
+  project_id = mongodbatlas_project.project.id
+  ip_address = element(aws_nat_gateway.ngw.*.public_ip, count.index)
 }

@@ -9,7 +9,7 @@ This repository contains files that I used for my studies with Terraform. I crea
 - [x] VPC
 - [x] ECS
 - [x] ECS Autoscaling
-- [ ] MongoDB
+- [x] MongoDB
 - [ ] Docker push to ECR
 
 ## Frontend Infrastructure
@@ -34,7 +34,19 @@ When you're done and want to remove everything, just run `docker-compose down`. 
 
 - MongoDB is going to run and listen on port `4567`, this is to avoid conflict if you already have a mongodb installed and running on port `27017`.
 
-# Deploy infrastructure
+# Deploy to cloud
+
+### Terraform will
+
+1. Provision all the necessary infrastructure
+2. Configure all the necessary configurations
+3. Create all necessary users for the resources
+4. Build and deploy the docker image for the backend API
+5. Build and deploy the TypeScript files for the frontend
+
+Once deployment is finished, the only thing to do is to access the website and you should be able to use it right away.
+
+### Steps
 
 1. Clone repository
 2. `yarn`

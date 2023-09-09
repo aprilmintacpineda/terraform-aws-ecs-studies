@@ -21,3 +21,11 @@ variable "private_subnet_cidrs" {
 variable "stage" {
   type = string
 }
+
+variable "mongodb_atlas_pubkey" {
+  type = string
+}
+
+variable "mongodb_atlas_privkey" {
+  type = string
+}
