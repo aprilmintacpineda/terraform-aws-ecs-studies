@@ -13,3 +13,7 @@ output "api-health-check-endpoint" {
 output "frontend-endpoint" {
   value = "https://${aws_cloudfront_distribution.frontend_cf.domain_name}"
 }
+
+output "api-docker-image" {
+  value = aws_ecr_repository.backend_docker_image.repository_url
+}

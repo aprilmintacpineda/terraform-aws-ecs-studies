@@ -6,3 +6,4 @@ private_subnet_cidrs = [ "10.0.201.0/24", "10.0.202.0/24" ]
 stage = "dev"
 mongodb_atlas_privkey = ""
 mongodb_atlas_pubkey = ""
+mongodb_dbname = "todo"

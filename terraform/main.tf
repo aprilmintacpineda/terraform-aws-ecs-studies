@@ -14,11 +14,6 @@ terraform {
   required_version = "~> 1.5.6"
 }
 
-resource "random_string" "uid" {
-  length = 6
-  special = false
-}
-
 resource "random_password" "mongodb_atlas_root_user" {
   length = 30
   special = false
@@ -29,12 +24,6 @@ resource "random_password" "mongodb_atlas_root_user" {
 
 provider "aws" {
   region = var.AWS_REGION
-
-  # default_tags {
-  #   tags = {
-  #     Project = "${var.stage}-${var.project_name}-${random_string.uid.result}"
-  #   }
-  # }
 }
 
 provider "mongodbatlas" {
@@ -394,12 +383,17 @@ resource "aws_cloudwatch_metric_alarm" "ecs_scale_down_memory_alarm" {
   }
 }
 
+resource "aws_ecr_repository" "backend_docker_image" {
+  name = "${var.stage}-${var.project_name}"
+  force_delete = true
+}
+
 resource "aws_ecs_task_definition" "ecs_task_definition" {
   family = "${var.stage}-${var.project_name}-ecs-task-definition"
   container_definitions = jsonencode([
     {
       name = "${var.stage}-${var.project_name}-ecs-container",
-      image = "127336369406.dkr.ecr.ap-southeast-1.amazonaws.com/tf-study",
+      image = aws_ecr_repository.backend_docker_image.repository_url,
       portMappings = [
         {
           containerPort: 3000
@@ -601,6 +595,30 @@ resource "null_resource" "frontend_files" {
   }
 }
 
+resource "null_resource" "backend_docker_image" {
+  triggers = {
+    always_run = timestamp()
+  }
+
+  // if we have a local .env file, we want to make sure we keep it before creating a new one with different contents
+  provisioner "local-exec" {
+    command = <<EOF
+      [[ ! -f ../apps/server/.env ]] || mv ../apps/server/.env ../apps/server/.env.backup
+      touch ../apps/server/.env
+      echo "MONGODB_URI=${mongodbatlas_cluster.main_db.srv_address}" >> ../apps/server/.env
+      echo "MONGODB_DBNAME=${var.mongodb_dbname}" >> ../apps/server/.env
+      echo "MONGODB_USER=root" >> ../apps/server/.env
+      echo "MONGODB_PASS=${random_password.mongodb_atlas_root_user.result}" >> ../apps/server/.env
+      yarn --cwd ../apps/server build
+      docker build -t ${var.stage}-${var.project_name}:latest ../apps/server
+      docker tag ${var.stage}-${var.project_name}:latest ${aws_ecr_repository.backend_docker_image.repository_url}:latest
+      ecs-cli push ${aws_ecr_repository.backend_docker_image.repository_url}:latest
+      aws ecs update-service --cluster ${aws_ecs_cluster.ecs_cluster.name} --service ${aws_ecs_service.ecs_service.name} --force-new-deployment
+      [[ ! -f ../apps/server/.env.backup ]] || mv ../apps/server/.env.backup ../apps/server/.env
+    EOF
+  }
+}
+
 resource "mongodbatlas_project" "project" {
   name = "${var.project_name}-${var.stage}"
   org_id = data.mongodbatlas_roles_org_id.current.org_id
@@ -623,13 +641,13 @@ resource "mongodbatlas_database_user" "root_user" {
   auth_database_name = "admin"
 
   scopes {
-    name = "${var.project_name}-${var.stage}"
+    name = mongodbatlas_cluster.main_db.name
     type = "CLUSTER"
   }
 
   roles {
     role_name = "readWrite"
-    database_name = "${var.project_name}-${var.stage}"
+    database_name = var.mongodb_dbname
   }
 }
 

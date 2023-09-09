@@ -29,3 +29,7 @@ variable "mongodb_atlas_pubkey" {
 variable "mongodb_atlas_privkey" {
   type = string
 }
+
+variable "mongodb_dbname" {
+  type = string
+}

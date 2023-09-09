@@ -10,13 +10,16 @@ This repository contains files that I used for my studies with Terraform. I crea
 - [x] ECS
 - [x] ECS Autoscaling
 - [x] MongoDB
-- [ ] Docker push to ECR
+- [x] ECR
+- [x] Docker build and push to ECR
+- [ ] Only build and deploy when there are changes in `server` folder
 
 ## Frontend Infrastructure
 
 - [x] S3 (private, not accessible to the public)
 - [x] Cloudfront
 - [x] Build and upload frontend files to S3
+- [ ] Only build and deploy when there are changes in `web` folder
 
 # Run the whole thing locally
 
@@ -28,7 +31,12 @@ Running everything locally with these easy steps are made possible by `docker-co
 
 Then visit `http://localhost:4000` for the frontend, and `http://localhost:3000/health` for the backend.
 
-When you're done and want to remove everything, just run `docker-compose down`. **You will still need to delete the images manually**!
+When you're done and want to remove everything, just run `docker-compose down`, then to cleanup everything else, `docker image prune -af && docker builder prune -af && docker volume prune -af && docker container prune -f`. Please see related docs before running prune commands.
+
+- https://docs.docker.com/engine/reference/commandline/container_prune/
+- https://docs.docker.com/engine/reference/commandline/volume_prune/
+- https://docs.docker.com/engine/reference/commandline/builder_prune/
+- https://docs.docker.com/engine/reference/commandline/image_prune/
 
 ### Note:
 

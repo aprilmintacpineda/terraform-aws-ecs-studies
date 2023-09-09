@@ -13,9 +13,7 @@
   },
   "scripts": {
     "dev": "nodemon --transpile-only --watch . --exec \"ts-node\" src/server.ts",
-    "docker:build": "docker build -t tf-study:latest .",
-    "docker:run": "docker run --name tf-study -p 3000:3000 -d tf-study",
-    "build": "rm -rf build && babel src -d build --copy-files --extensions '.ts' && cp package.json build/ && cp yarn.lock build/"
+    "build": "rm -rf build && babel src -d build --copy-files --extensions '.ts' && cp package.json build/ && cp yarn.lock build/ && cp .env build/.env"
   },
   "devDependencies": {
     "@babel/cli": "^7.22.10",
