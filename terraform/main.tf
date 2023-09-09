@@ -606,13 +606,14 @@ resource "mongodbatlas_project" "project" {
   org_id = data.mongodbatlas_roles_org_id.current.org_id
 }
 
-resource "mongodbatlas_serverless_instance" "main_db" {
+resource "mongodbatlas_cluster" "main_db" {
   name = "${var.project_name}-${var.stage}"
   project_id = mongodbatlas_project.project.id
 
-  provider_settings_backing_provider_name = "AWS"
-  provider_settings_provider_name = "SERVERLESS"
-  provider_settings_region_name = upper(replace(var.AWS_REGION, "-", "_"))
+  provider_name = "TENANT"
+  backing_provider_name = "AWS"
+  provider_region_name = upper(replace(var.AWS_REGION, "-", "_"))
+  provider_instance_size_name = "M0"
 }
 
 resource "mongodbatlas_database_user" "root_user" {
