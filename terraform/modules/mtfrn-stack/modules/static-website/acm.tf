@@ -1,5 +1,5 @@
 resource "aws_acm_certificate" "custom_domain_certificate" {
-  domain_name = var.subdomain != "" ? "${var.subdomain}.${var.hosted_zone_name}" : var.hosted_zone_name
+  domain_name = local.custom_domain
   validation_method = "DNS"
   provider = aws.acm_certificate
 }

@@ -41,7 +41,7 @@ resource "aws_cloudfront_distribution" "frontend_cf" {
   http_version = "http2and3"
   default_root_object = "index.html"
 
-  aliases = [var.subdomain != "" ? "${var.subdomain}.${var.hosted_zone_name}" : "${var.hosted_zone_name}"]
+  aliases = [local.custom_domain]
   
   origin {
     domain_name = aws_s3_bucket.frontend_s3_bucket.bucket_regional_domain_name
