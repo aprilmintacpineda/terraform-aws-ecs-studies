@@ -37,3 +37,7 @@ output "ecs_lb_dns_name" {
 output "website_cf_domain_name" {
   value = module.static_website.website_cf_domain_name
 }
+
+output "website_url" {
+  value = var.subdomain != "" ? "https://${var.subdomain}.${var.hosted_zone_name}" : "https://${var.hosted_zone_name}"
+}

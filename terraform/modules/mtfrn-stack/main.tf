@@ -16,6 +16,9 @@ module "static_website" {
   aws_region = var.aws_region
   project_name = var.project_name
   stage = var.stage
+  hosted_zone_id = var.hosted_zone_id
+  hosted_zone_name = var.hosted_zone_name
+  subdomain = var.subdomain
 }
 
 module "ecs" {

@@ -11,6 +11,9 @@ module "mtfrn_stack" {
   public_subnet_cidrs = var.public_subnet_cidrs
   ecr_repository_force_delete = true
   website_s3_force_destroy = true
+  hosted_zone_id = var.hosted_zone_id
+  hosted_zone_name = var.hosted_zone_name
+  subdomain = var.stage != "prod" ? var.stage : ""
 }
 
 resource "null_resource" "frontend_files" {

@@ -33,3 +33,11 @@ variable "mongodb_atlas_privkey" {
 variable "mongodb_dbname" {
   type = string
 }
+
+variable "hosted_zone_id" {
+  type = string
+}
+
+variable "hosted_zone_name" {
+  type = string
+}

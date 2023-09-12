@@ -40,6 +40,8 @@ resource "aws_cloudfront_distribution" "frontend_cf" {
   is_ipv6_enabled = true
   http_version = "http2and3"
   default_root_object = "index.html"
+
+  aliases = [var.subdomain != "" ? "${var.subdomain}.${var.hosted_zone_name}" : "${var.hosted_zone_name}"]
   
   origin {
     domain_name = aws_s3_bucket.frontend_s3_bucket.bucket_regional_domain_name
@@ -67,7 +69,9 @@ resource "aws_cloudfront_distribution" "frontend_cf" {
   }
 
   viewer_certificate {
-    cloudfront_default_certificate = true
+    acm_certificate_arn = aws_acm_certificate.custom_domain_certificate.arn
+    minimum_protocol_version = "TLSv1.2_2018"
+    ssl_support_method = "sni-only"
   }
 
   restrictions {

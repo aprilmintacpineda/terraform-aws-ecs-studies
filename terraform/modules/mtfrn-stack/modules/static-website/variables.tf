@@ -18,3 +18,15 @@ variable "project_name" {
 variable "aws_region" {
   type = string
 }
+
+variable "hosted_zone_id" {
+  type = string
+}
+
+variable "hosted_zone_name" {
+  type = string
+}
+
+variable "subdomain" {
+  type = string
+}

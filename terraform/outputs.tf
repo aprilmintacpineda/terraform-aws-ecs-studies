@@ -11,7 +11,7 @@ output "api-health-check-endpoint" {
 }
 
 output "frontend-endpoint" {
-  value = "https://${module.mtfrn_stack.website_cf_domain_name}"
+  value = module.mtfrn_stack.website_url
 }
 
 output "api-docker-image" {
