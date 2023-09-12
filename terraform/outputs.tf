@@ -1,19 +1,19 @@
 output "api-endpoint" {
-  value = "http://${aws_lb.ecs_lb.dns_name}"
+  value = "http://${module.mtfrn_stack.ecs_lb_dns_name}"
 }
 
 output "api-load-test-endpoint" {
-  value = "http://${aws_lb.ecs_lb.dns_name}/load-test"
+  value = "http://${module.mtfrn_stack.ecs_lb_dns_name}/load-test"
 }
 
 output "api-health-check-endpoint" {
-  value = "http://${aws_lb.ecs_lb.dns_name}/health"
+  value = "http://${module.mtfrn_stack.ecs_lb_dns_name}/health"
 }
 
 output "frontend-endpoint" {
-  value = "https://${aws_cloudfront_distribution.frontend_cf.domain_name}"
+  value = "https://${module.mtfrn_stack.website_cf_domain_name}"
 }
 
 output "api-docker-image" {
-  value = aws_ecr_repository.backend_docker_image.repository_url
+  value = module.mtfrn_stack.ecr_repo_url
 }
