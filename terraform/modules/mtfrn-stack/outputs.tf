@@ -30,6 +30,10 @@ output "trcp_endpoint" {
   value = module.ecs.trcp_endpoint
 }
 
+output "api_endpoint" {
+  value = module.ecs.api_endpoint
+}
+
 output "ecs_lb_dns_name" {
   value = module.ecs.ecs_lb_dns_name
 }

@@ -1,13 +1,13 @@
 output "api-endpoint" {
-  value = "http://${module.mtfrn_stack.ecs_lb_dns_name}"
+  value = module.mtfrn_stack.api_endpoint
 }
 
 output "api-load-test-endpoint" {
-  value = "http://${module.mtfrn_stack.ecs_lb_dns_name}/load-test"
+  value = "${module.mtfrn_stack.api_endpoint}/load-test"
 }
 
 output "api-health-check-endpoint" {
-  value = "http://${module.mtfrn_stack.ecs_lb_dns_name}/health"
+  value = "${module.mtfrn_stack.api_endpoint}/health"
 }
 
 output "frontend-endpoint" {

@@ -1,5 +1,9 @@
+output "api_endpoint" {
+  value = "https://${local.custom_domain}"
+}
+
 output "trcp_endpoint" {
-  value = "http://${aws_lb.ecs_lb.dns_name}/trpc"
+  value = "https://${local.custom_domain}/trpc"
 }
 
 output "ecr_repo_url" {

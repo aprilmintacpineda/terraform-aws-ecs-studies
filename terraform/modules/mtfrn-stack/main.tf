@@ -30,4 +30,7 @@ module "ecs" {
   project_name = var.project_name
   stage = var.stage
   vpc_cidr = var.vpc_cidr
+  subdomain = var.subdomain
+  hosted_zone_name = var.hosted_zone_name
+  hosted_zone_id = var.hosted_zone_id
 }

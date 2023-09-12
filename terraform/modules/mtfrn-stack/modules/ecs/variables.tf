@@ -25,3 +25,15 @@ variable "public_subnet_cidrs" {
 variable "vpc_cidr" {
   type = string
 }
+
+variable "subdomain" {
+  type = string
+}
+
+variable "hosted_zone_name" {
+  type = string
+}
+
+variable "hosted_zone_id" {
+  type = string
+}

@@ -13,7 +13,7 @@ This repository contains files that I used for my studies with Terraform. I crea
 - [x] ECR
 - [x] Docker build and push to ECR
 - [ ] Only build and deploy when there are changes in `server` folder
-- [ ] Use custom domain for APIs
+- [x] Use custom domain for APIs
 
 ## Frontend Infrastructure
 
