@@ -21,7 +21,7 @@ resource "aws_route_table" "private_rt" {
 resource "aws_route" "ngw_route" {
   count = length(var.public_subnet_cidrs)
   route_table_id = element(aws_route_table.private_rt.*.id, count.index)
-  gateway_id = element(aws_nat_gateway.ngw.*.id, count.index)
+  nat_gateway_id = element(aws_nat_gateway.ngw.*.id, count.index)
   destination_cidr_block = "0.0.0.0/0"
 }
 
