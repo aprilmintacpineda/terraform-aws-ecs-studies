@@ -18,6 +18,7 @@ This repository contains files that I used for my studies with Terraform. I crea
 - [x] Docker build and push to ECR
 - [x] Only build and deploy when there are changes in `server` folder
 - [x] Use custom domain for APIs
+- [ ] Add cypress tests
 
 ## Frontend Infrastructure
 
@@ -26,6 +27,7 @@ This repository contains files that I used for my studies with Terraform. I crea
 - [x] Build and upload frontend files to S3
 - [x] Only build and deploy when there are changes in `web` folder
 - [x] Use custom domain for website
+- [ ] Add cypress tests
 
 # Run the whole thing locally
 
