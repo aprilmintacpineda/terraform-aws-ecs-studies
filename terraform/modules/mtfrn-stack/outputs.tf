@@ -12,6 +12,7 @@ output "mongodb_uri" {
 
 output "mongodb_root_user_pass" {
   value = module.mongodb.mongodb_root_user_pass
+  sensitive = true
 }
 
 output "ecr_repo_url" {
