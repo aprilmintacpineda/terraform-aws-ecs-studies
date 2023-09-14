@@ -16,9 +16,44 @@ module "mtfrn_stack" {
   subdomain = var.stage != "prod" ? var.stage : ""
 }
 
+locals {
+  # when the following files changed, we will trigger the frontend build and deploy
+  frontend_files = concat(
+    [for fn in fileset("../apps/web/src", "**/*") : "../apps/web/src/${fn}"],
+    [for fn in fileset("../apps/web/public", "**/*") : "../apps/web/public/${fn}"],
+    [
+      "../apps/web/.env",
+      "../apps/web/package.json",
+      "../apps/web/yarn.lock",
+      "../apps/web/vite.config.ts",
+      "../apps/web/tsconfig.json",
+      "../apps/web/tsconfig.node.json",
+      "../apps/web/index.html"
+    ]
+  )
+
+  # when the following files changed, we will trigger the backend build and deploy
+  server_files = concat(
+    [for fn in fileset("../apps/server/src", "**/*") : "../apps/server/src/${fn}"],
+    [
+      "../apps/server/.env",
+      "../apps/server/package.json",
+      "../apps/server/yarn.lock",
+      "../apps/server/tsconfig.json",
+      "../apps/server/Dockerfile",
+      "../apps/server/babel.config.js"
+    ]
+  )
+}
+
 resource "null_resource" "frontend_files" {
   triggers = {
-    always_run = timestamp()
+    files_changed = jsonencode(
+      concat(
+        [ for filepath in local.frontend_files : filesha1(filepath) ],
+        [module.mtfrn_stack.trcp_endpoint]
+      )
+    )
   }
 
   // if we have a local .env file, we want to make sure we keep it before creating a new one with different contents
@@ -37,7 +72,16 @@ resource "null_resource" "frontend_files" {
 
 resource "null_resource" "backend_docker_image" {
   triggers = {
-    always_run = timestamp()
+    files_changed = jsonencode(
+      concat(
+        [ for filepath in local.server_files : filesha1(filepath) ],
+        [
+          module.mtfrn_stack.mongodb_uri,
+          var.mongodb_dbname,
+          module.mtfrn_stack.mongodb_root_user_pass
+        ]
+      )
+    )
   }
 
   // if we have a local .env file, we want to make sure we keep it before creating a new one with different contents
