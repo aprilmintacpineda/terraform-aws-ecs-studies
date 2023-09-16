@@ -39,6 +39,7 @@ const CompleteTodo: React.FunctionComponent<Props> = ({ todo }) => {
       disabled={isLoading || isSuccess}
       onClick={markAsComplete}
       color="primary"
+      data-testid="todo-complete"
     >
       <CheckIcon />
     </IconButton>

@@ -78,6 +78,9 @@ const AddTodoForm: React.FunctionComponent = () => {
                 disabled={isSubmitting}
                 fullWidth
                 inputRef={textFieldRef}
+                inputProps={{
+                  'data-testid': 'create-todo-input-text'
+                }}
               />
             </Form>
           );

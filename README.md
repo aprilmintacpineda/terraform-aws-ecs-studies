@@ -7,6 +7,16 @@ This repository contains files that I used for my studies with Terraform. I crea
 ## CI/CD
 
 - [ ] Integrate with Circle CI
+- [ ] Run cypress tests on push
+- [ ] Validate terraform
+- [ ] Run build and deploy after tests
+
+## Tests
+
+- [x] Add cypress e2e tests
+- [x] Be able to run e2e tests in a CI environment
+- [ ] Add cypress API tests
+- [ ] Integrate with Cypress Cloud
 
 ## Backend Infrastructure
 
@@ -18,7 +28,6 @@ This repository contains files that I used for my studies with Terraform. I crea
 - [x] Docker build and push to ECR
 - [x] Only build and deploy when there are changes in `server` folder
 - [x] Use custom domain for APIs
-- [ ] Add cypress tests
 
 ## Frontend Infrastructure
 
@@ -27,7 +36,6 @@ This repository contains files that I used for my studies with Terraform. I crea
 - [x] Build and upload frontend files to S3
 - [x] Only build and deploy when there are changes in `web` folder
 - [x] Use custom domain for website
-- [ ] Add cypress tests
 
 # Run the whole thing locally
 
@@ -49,6 +57,145 @@ When you're done and want to remove everything, just run `docker-compose down`, 
 ### Note:
 
 - MongoDB is going to run and listen on port `4567`, this is to avoid conflict if you already have a mongodb installed and running on port `27017`.
+
+## Running tests
+
+To run tests conveniently without needing to start the whole server, you can run `yarn e2e:ci`. If you have booted up the frontend and backend servers, you can run `yarn e2e:headless`. If you want to open cypress, just run `yarn cypress:open`
+
+<details>
+<summary>Example output after running <code>yarn e2e:ci</code></summary>
+
+```
+╰─$ yarn e2e:ci
+yarn run v1.22.19
+$ CYPRESS_BASE_URL=http://localhost:3030 start-test frontend:ci http://localhost:3030 backend:ci http://localhost:3000/health e2e:headless
+1: starting server using command "npm run frontend:ci"
+and when url "[ 'http://localhost:3030' ]" is responding with HTTP status code 200
+2: starting server using command "npm run backend:ci"
+and when url "[ 'http://localhost:3000/health' ]" is responding with HTTP status code 200
+running tests using command "npm run e2e:headless"
+
+> frontend:ci
+> yarn --cwd apps/web start:ci
+
+$ yarn build && serve dist -s -l 3030
+$ tsc && vite build
+vite v4.4.9 building for production...
+✓ 1553 modules transformed.
+dist/index.html 0.86 kB │ gzip: 0.47 kB
+dist/assets/index-b95fce45.js 471.57 kB │ gzip: 151.28 kB
+✓ built in 6.24s
+UPDATE The latest version of `serve` is 14.2.1
+
+┌────────────────────────────────────────────┐
+│ │
+│ Serving! │
+│ │
+│ - Local: http://localhost:3030 │
+│ - Network: http://192.168.31.149:3030 │
+│ │
+│ Copied local address to clipboard! │
+│ │
+└────────────────────────────────────────────┘
+
+HTTP 9/15/2023 3:06:53 PM 127.0.0.1 HEAD /
+HTTP 9/15/2023 3:06:53 PM 127.0.0.1 Returned 200 in 18 ms
+
+> backend:ci
+> yarn --cwd apps/server start:ci
+
+$ yarn build && node build/server.js
+$ rm -rf build && babel src -d build --copy-files --extensions '.ts' && cp package.json build/ && cp yarn.lock build/ && cp .env build/.env
+Successfully compiled 11 files with Babel (767ms).
+http://localhost:3000
+
+> e2e:headless
+> cypress run --browser chrome
+
+DevTools listening on ws://127.0.0.1:64472/devtools/browser/fd5732c5-1e0b-422a-9985-7889c411e15d
+Couldn't find tsconfig.json. tsconfig-paths will be skipped
+
+====================================================================================================
+
+(Run Starting)
+
+┌────────────────────────────────────────────────────────────────────────────────────────────────┐
+│ Cypress: 13.2.0 │
+│ Browser: Chrome 116 (headless) │
+│ Node Version: v16.19.1 (/Users/aprilmintacpineda/.nvm/versions/node/v16.19.1/bin/node) │
+│ [39m │
+│ Specs: 1 found (todo.cy.ts) │
+│ Searched: cypress/e2e/\*_/_.cy.{js,jsx,ts,tsx} │
+└────────────────────────────────────────────────────────────────────────────────────────────────┘
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+Running: todo.cy.ts (1 of 1)
+
+Todos management
+HTTP 9/15/2023 3:07:16 PM 127.0.0.1 GET /
+HTTP 9/15/2023 3:07:16 PM 127.0.0.1 Returned 200 in 2 ms
+HTTP 9/15/2023 3:07:16 PM 127.0.0.1 GET /assets/index-b95fce45.js
+HTTP 9/15/2023 3:07:16 PM 127.0.0.1 Returned 200 in 9 ms
+✓ create new todo (2070ms)
+HTTP 9/15/2023 3:07:18 PM 127.0.0.1 GET /
+HTTP 9/15/2023 3:07:18 PM 127.0.0.1 Returned 200 in 2 ms
+HTTP 9/15/2023 3:07:18 PM 127.0.0.1 GET /assets/index-b95fce45.js
+HTTP 9/15/2023 3:07:18 PM 127.0.0.1 Returned 304 in 2 ms
+✓ should have todo complete button (3827ms)
+HTTP 9/15/2023 3:07:22 PM 127.0.0.1 GET /
+HTTP 9/15/2023 3:07:22 PM 127.0.0.1 Returned 200 in 2 ms
+HTTP 9/15/2023 3:07:22 PM 127.0.0.1 GET /assets/index-b95fce45.js
+HTTP 9/15/2023 3:07:22 PM 127.0.0.1 Returned 304 in 1 ms
+✓ should not have todo delete button (4459ms)
+HTTP 9/15/2023 3:07:26 PM 127.0.0.1 GET /
+HTTP 9/15/2023 3:07:26 PM 127.0.0.1 Returned 200 in 1 ms
+HTTP 9/15/2023 3:07:26 PM 127.0.0.1 GET /assets/index-b95fce45.js
+HTTP 9/15/2023 3:07:26 PM 127.0.0.1 Returned 304 in 1 ms
+✓ be able to mark as done (6396ms)
+HTTP 9/15/2023 3:07:33 PM 127.0.0.1 GET /
+HTTP 9/15/2023 3:07:33 PM 127.0.0.1 Returned 200 in 2 ms
+HTTP 9/15/2023 3:07:33 PM 127.0.0.1 GET /assets/index-b95fce45.js
+HTTP 9/15/2023 3:07:33 PM 127.0.0.1 Returned 304 in 1 ms
+✓ not have complete todo button when todo has been completed (2169ms)
+HTTP 9/15/2023 3:07:35 PM 127.0.0.1 GET /
+HTTP 9/15/2023 3:07:35 PM 127.0.0.1 Returned 200 in 1 ms
+HTTP 9/15/2023 3:07:35 PM 127.0.0.1 GET /assets/index-b95fce45.js
+HTTP 9/15/2023 3:07:35 PM 127.0.0.1 Returned 304 in 1 ms
+✓ be able to delete todo (4479ms)
+
+6 passing (24s)
+
+(Results)
+
+┌────────────────────────────────────────────────────────────────────────────────────────────────┐
+│ Tests: 6 │
+│ Passing: 6 │
+│ Failing: 0 │
+│ Pending: 0 │
+│ Skipped: 0 │
+│ Screenshots: 0 │
+│ Video: false │
+│ Duration: 23 seconds │
+│ Spec Ran: todo.cy.ts │
+└────────────────────────────────────────────────────────────────────────────────────────────────┘
+
+====================================================================================================
+
+(Run Finished)
+
+       Spec                                              Tests  Passing  Failing  Pending  Skipped
+
+┌────────────────────────────────────────────────────────────────────────────────────────────────┐
+│ ✔ todo.cy.ts 00:23 6 6 - - - │
+└────────────────────────────────────────────────────────────────────────────────────────────────┘
+✔ All specs passed! 00:23 6 6 - - -
+
+INFO Gracefully shutting down. Please wait...
+✨ Done in 63.41s.
+```
+
+</details>
 
 # Deploy to cloud
 

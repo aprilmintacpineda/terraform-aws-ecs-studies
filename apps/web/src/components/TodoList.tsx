@@ -17,7 +17,11 @@ const TodoList: React.FunctionComponent<Props> = ({ todos }) => {
   }
 
   return (
-    <Stack justifyContent="center" alignItems="center">
+    <Stack
+      justifyContent="center"
+      alignItems="center"
+      data-testid="todo-list"
+    >
       {todos.map(todo => (
         <Todo key={todo._id} todo={todo} />
       ))}

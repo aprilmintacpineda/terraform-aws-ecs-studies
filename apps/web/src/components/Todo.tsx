@@ -12,7 +12,7 @@ type Props = {
 
 const Todo: React.FunctionComponent<Props> = ({ todo }) => {
   return (
-    <Card sx={{ width: '100%', marginBottom: 1 }}>
+    <Card sx={{ width: '100%', marginBottom: 1 }} data-testid="todo">
       <CardContent>
         <Stack
           flexDirection="row"

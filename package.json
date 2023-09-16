@@ -11,8 +11,15 @@
   "scripts": {
     "lint": "prettier . --write && eslint . --fix",
     "postinstall": "yarn yarn-deduplicate && husky install",
-    "clean-install": "rm -rf node_modules apps/web-app/node_modules apps/server/node_modules && yarn",
-    "ts-check": "yarn --cwd apps/web-app ts-check && yarn --cwd apps/server ts-check"
+    "clean-install": "rm -rf node_modules apps/web/node_modules apps/server/node_modules && yarn",
+    "ts-check": "yarn --cwd apps/web ts-check && yarn --cwd apps/server ts-check",
+    "web:dev": "yarn --cwd apps/web dev",
+    "server:dev": "yarn --cwd apps/server dev",
+    "web:ci": "yarn --cwd apps/web start:ci",
+    "server:ci": "yarn --cwd apps/server start:ci",
+    "cypress:open": "cypress open",
+    "e2e:headless": "cypress run --browser chrome",
+    "e2e:ci": "CYPRESS_BASE_URL=http://localhost:3030 start-test web:ci http://localhost:3030 server:ci http://localhost:3000/health e2e:headless"
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx,css,less,scss,json,gql,md}": [
@@ -36,5 +43,10 @@
     "prettier": "^3.0.2",
     "typescript": "^5.1.6",
     "yarn-deduplicate": "^6.0.2"
+  },
+  "dependencies": {
+    "@faker-js/faker": "^8.0.2",
+    "cypress": "^13.2.0",
+    "start-server-and-test": "^2.0.0"
   }
 }

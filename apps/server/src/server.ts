@@ -29,9 +29,6 @@ const server = fastify({
     server.get('/health', async (request, reply) => {
       try {
         const result = await mongoose.connection.db.admin().ping();
-
-        console.log('health', result);
-
         if (result.ok) reply.status(200).send();
         else reply.status(500).send();
       } catch (error) {

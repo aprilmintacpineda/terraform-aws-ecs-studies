@@ -13,6 +13,7 @@
   },
   "scripts": {
     "dev": "nodemon --transpile-only --watch . --exec \"ts-node\" src/server.ts",
+    "start:ci": "yarn build && node build/server.js",
     "build": "rm -rf build && babel src -d build --copy-files --extensions '.ts' && cp package.json build/ && cp yarn.lock build/ && cp .env build/.env"
   },
   "devDependencies": {

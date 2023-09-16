@@ -39,6 +39,7 @@ const DeleteTodo: React.FunctionComponent<Props> = ({ todo }) => {
       disabled={isLoading || isSuccess}
       onClick={deleteTodo}
       color="error"
+      data-testid="todo-delete"
     >
       <DeleteForeverIcon />
     </IconButton>
